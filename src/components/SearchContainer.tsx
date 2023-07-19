@@ -1,9 +1,11 @@
 import '../Global.css';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { AiOutlineSearch } from 'react-icons/ai';
 import styled from 'styled-components';
+
+import useKeyDown from '../hooks/useKeyDown';
 
 const Ul = styled.ul`
 	z-index: 300;
@@ -73,24 +75,12 @@ export default function SearchContainer({
 		);
 	};
 
-	const [searchIndex, setSearchIndex] = useState<number>(-1);
-
+	const { searchIndex, changeValue } = useKeyDown(searchResult);
 	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			if (e.key === 'ArrowUp') {
-				setSearchIndex((prev) => Math.max(prev - 1, -1));
-			} else if (e.key === 'ArrowDown') {
-				setSearchIndex((prev) => Math.min(prev + 1, searchResult.length - 1));
-			} else if (e.key === 'Enter') {
-				setValue(searchResult[searchIndex]);
-				e.preventDefault();
-			}
-		};
-		window.addEventListener('keydown', handleKeyDown);
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown);
-		};
-	}, [searchIndex, searchResult, setValue]);
+		if (changeValue !== null) {
+			setValue(changeValue);
+		}
+	}, [changeValue, setValue]);
 
 	return (
 		<Container>
