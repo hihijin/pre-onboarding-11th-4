@@ -1,6 +1,6 @@
 import '../Global.css';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { AiOutlineSearch } from 'react-icons/ai';
 import styled from 'styled-components';
@@ -72,13 +72,39 @@ export default function SearchContainer({
 			`https://clinicaltrialskorea.com/studies?conditions=${selectedOption}`,
 		);
 	};
+
+	const [searchIndex, setSearchIndex] = useState<number>(-1);
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === 'ArrowUp') {
+				setSearchIndex((prev) => Math.max(prev - 1, -1));
+			} else if (e.key === 'ArrowDown') {
+				setSearchIndex((prev) => Math.min(prev + 1, searchResult.length - 1));
+			} else if (e.key === 'Enter') {
+				setValue(searchResult[searchIndex]);
+				e.preventDefault();
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [searchIndex, searchResult, setValue]);
+
 	return (
 		<Container>
 			<Ul>
 				<div>추천 검색어</div>
 				{searchResult.length > 0 ? (
-					searchResult.map((result: string) => (
-						<Li key={result}>
+					searchResult.map((result: string, idx: number) => (
+						<Li
+							key={result}
+							style={{
+								borderRadius: '10px',
+								background: searchIndex === idx ? '#d0e8fd' : '',
+							}}
+						>
 							<AiOutlineSearch size="20px" color="rgba(0, 0, 0, 0.8)" />
 							<button onClick={() => keywordSelected(result)}>
 								<p>{result}</p>
