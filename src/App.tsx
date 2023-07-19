@@ -1,7 +1,9 @@
 import './Global.css';
 
+import MainPage from './page/MainPage';
+
 function App() {
-	return <div />;
+	return <MainPage />;
 }
 
 export default App;
