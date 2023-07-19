@@ -34,6 +34,11 @@ $ npm install
 $ npm run start
 ```
 
+- .env 파일 생성
+```
+REACT_APP_SERVER_API='http://localhost:4000/sick'
+```
+
 </br>
 
 
@@ -53,15 +58,23 @@ $ npm run start
   - [ ] 클라이언트에서 디바운싱 시간을 이탈하여 API 호출을 이룰 때마다, 캐시 스토리지에 데이터를 저장합니다.
 
   - [ ] 후에 클라이언트에서 다시 API 호출을 하기 전, 서버로 보낼 `쿼리 스트링`을 캐시 스토리지에 저장된 `캐시 object key`를 비교하여 일치하는 캐시 데이터의 필요 부분을 추출하여 관련 검색어를 출력하였고, 일치하지 않을 때(캐시 처리된 데이터가 없는 경우) 서버에 다시 API 요청을 보내고 캐싱하는 방식으로 구현했습니다.
+  캐싱에 따른 api호출 함수는 커스텀 훅으로 분리하여 뷰 단에서의 로직을 최소화하고자 노력했습니다.
      
   - [ ] 데이터를 캐시 스토리지에 저장할 때 newDate().getTime()으로 `timestamp라는 캐시 object key`를 추가합니다. 캐시데이터가 업데이트 될 때마다 현재 시간과 각 캐시데이터의 timestamp를 뺀 시간이 설정한 시간(1분)을 넘었다면 캐시 스토리지에 해당 데이터가 삭제됩니다.(moment.js 라이브러리를 사용하지 않고 구현했습니다.)
+     
+  - [ ] 캐싱에 따른 api호출 함수와 캐싱 삭제 함수는 커스텀 훅으로 분리하여 empireTime을 설정할 수 있도록 확장성과 함께 뷰 단에서의 로직을 최소화하고자 노력했습니다.
 
+  [캐싱] <br/>
+  ![캐싱](https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/3e9f202b-5366-451c-a7c5-01d0c007ae3b)
 
-https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/323b1de9-9983-49dc-8e3c-796c92a3870c
+  [캐시스토리지 데이터 삭제] <br/>
+   
+  <img width="677" alt="image" src="https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/232e080f-4896-4354-aff1-283df47fae51">
 
-<img width="677" alt="image" src="https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/232e080f-4896-4354-aff1-283df47fae51">
+  https://github.com/hihijin/pre-onboarding-11th-4/blob/5d1cfba2a2f5f1644fe3bb05f9c17b05b03829c4/src/hooks/useFetch.ts#L6-L60
 
-  https://github.com/hihijin/pre-onboarding-11th-4/blob/5d1cfba2a2f5f1644fe3bb05f9c17b05b03829c4/src/hooks/useFetch.ts
+  https://github.com/hihijin/pre-onboarding-11th-4/blob/5d1cfba2a2f5f1644fe3bb05f9c17b05b03829c4/src/hooks/useDeleteCache.ts#L5-L38
+
 
   
 
@@ -74,24 +87,34 @@ https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/323b1de9-9983-
   - [ ] 따라서 첫 onChange 이벤트의 발생 시점으로부터 의도적인 `지연시간`을 두어 API 호출 횟수를 줄였습니다.
 
   - [ ] 검색창의 onChange 이벤트가 비동기적으로 input의 상태 값을 업데이트하되, 사용자가 입력한 검색 결과에 대한 비동기 요청은 `디바운싱 함수`에서 설정한 시간(600ms)이 지난 뒤에 최종적으로 업데이트된 상태 값을 쿼리 스트링으로 보내 호출되게 구현했습니다.
+     
+  - [ ] 디바운싱 함수는 커스텀 훅으로 분리하여 지연시간을 설정할 수 있도록 확장성과 함께 뷰 단에서의 로직을 최소화하고자 노력했습니다.
 
-  ![3-1 디바운싱 후](https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/bfe7114b-b7a0-4629-adae-9fa190557e2d)
+  [디바운싱 후] <br/>
+  ![디바운싱 후](https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/5e498efb-c39a-40bd-8d5d-327b564cf415)
 
+  [디바운싱 전] <br/>
+  ![디바운싱 전](https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/fbe69cae-477b-4514-b987-897780a5edb1)
 
-  https://github.com/hihijin/pre-onboarding-11th-4/blob/5d1cfba2a2f5f1644fe3bb05f9c17b05b03829c4/src/hooks/useDebounce.ts
+  https://github.com/hihijin/pre-onboarding-11th-4/blob/5d1cfba2a2f5f1644fe3bb05f9c17b05b03829c4/src/hooks/useDebounce.ts#L3-L17
 
-  https://github.com/hihijin/pre-onboarding-11th-4/blob/5d1cfba2a2f5f1644fe3bb05f9c17b05b03829c4/src/hooks/useDeleteCache.ts
 
 <br/>
 
 ### 3. 키보드만으로 추천 검색어들로 이동 가능한 UX 구축
 
-- [ ] 사용자가 추천 검색어 간 `키 이벤트`(ArrowUp, ArrowDown)로 자유롭게 이동할 수 있게 구현했습니다.
+- [ ] 사용자가 추천 검색어 간 `키 이벤트`(ArrowUp, ArrowDown, Enter)로 자유롭게 이동하고 선택할 수 있게 구현했습니다.
 
-- [ ] 검색창 이동 간 선택된 검색어는 하이라이트 처리로 UI를 구성했고 검색 목록 하단에 도달했을 때 ArrowUp, ArrowDown 이벤트에는 자동으로 목록 내 검색어 위치로 따라가도록 구현했습니다.
+- [ ] ArrowUp, ArrowDown 이벤트로 검색창 이동 간 선택된 검색어는 하이라이트 처리로 UI를 구성했고 Enter키 이벤트로 선택된 추천 검색어가 검색창에 뜨게 만들었습니다.
 
-- [ ] 일반적인 사용자 검색 유형을 고려하여 페이지를 다시 돌아오거나 새로고침 했을 시에도 최근 검색어가 유지되도록 구현하였습니다. onKeyDown 이벤트가 발생했을 때 호출되는 함수는 커스텀 훅으로 분리하여 뷰 단에서의 로직을 최소화하고자 노력했습니다.
-  
+- [ ] onKeyDown 이벤트가 발생했을 때 호출되는 함수는 `커스텀 훅`으로 분리하여 뷰 단에서의 로직을 최소화하고자 노력했습니다.
+
+  [keydown 이벤트] <br/>
+  ![keydown 이벤트)](https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/44144bbf-426b-470e-8617-043485b75fa0)
+
+
+  https://github.com/hihijin/pre-onboarding-11th-4/blob/c2752fd8b0ead2bf67459d4fb274ceeabbea4881/src/hooks/useKeyDown.ts#L3-L25
+
 
 <br/>
 
@@ -103,6 +126,14 @@ https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/323b1de9-9983-
 
 ### 5. API를 호출할 때 마다 `console.info("calling api")` 출력을 통해 콘솔창에서 API 호출 횟수 확인이 가능하도록 설정
 <img width="680" alt="image" src="https://github.com/hihijin/pre-onboarding-11th-4/assets/117073214/55ecb5e2-3bed-4b86-bd5f-1351b8a5a2a7">
+
+<br/>
+
+### 6. Axios instance로 api호출 모듈화
+- [ ] api 호출을 위한 `custom api함수`를 만들어 `axios instance` 설정, util폴더로 이동시켜 관심사 분리와 baseURL의 변동으로 인한 실수를 줄이고자 했습니다.
+- [ ] api 호출하는 컴포넌트에서는 customAPI를 호출하여 전달인자로 `쿼리 스트링`만 넣으면 되므로 직접 api호출하는 컴포넌트에서의 로직을 최소화하고자 했습니다.
+
+  https://github.com/hihijin/pre-onboarding-11th-4/blob/c2752fd8b0ead2bf67459d4fb274ceeabbea4881/src/utills/customAPI.ts#L1-L10
 
 <br/>
 
